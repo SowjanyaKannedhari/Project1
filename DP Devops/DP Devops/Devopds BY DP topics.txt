@@ -1,0 +1,28 @@
+Git
+Maven
+Jenkins
+
+
+Docker1 1/18/2022 ----------docker image,container
+Docker2 1/19/2022 ----------docker
+Docker3 1/20/2022 ----------docker multi container architecture,docker volumes
+Docker4 1/21/2022 ----------custom docker images, Cache busting
+Docker5 1/25/2022 ----------- DockerHub,Docker SWARM,Container Archestration
+Docker 1/27/2022--------------Docker SWARM
+Docker 1/31/2022--------------Docker Networking
+
+Docker commit C1 ubuntu_nginx
+
+AzureTest
+
+
+Ansible 02/01/2022 ----------------- Ansible Installation
+Ansible 02/02/2022 ----------------- Ansible Adhoc Commands
+Ansible 02/04/2022 ----------------- Ansible Adhoc Commands
+Ansible 02/07/2022 ----------------- Ansible PlayBooks
+Ansible 02/08/2022 ----------------- Ansible host scope varibale,hanlder,err handlers
+
+
+
+Nagios 02/09/2022
+

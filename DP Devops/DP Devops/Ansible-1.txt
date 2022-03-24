@@ -1,0 +1,157 @@
+
+
+Configuration Management
+-----------------------------------
+This is process of configuring remote servers from one point of control.
+
+Advantages
+----------------------
+1) Provisioning of servers
+	The applications that should be installed on server can be done very quickly from a.
+
+2) Idempotent 
+	Configuration management tools are used to bring the server to a particular state, called as desired state.    
+        If a server already in the desired state, configuration management tools will not reconfigure that server.
+
+
+Note: Cofiguration management tools cannot be used for installing OS from the scratch.
+They can be used only for managing the applications on top of the OS.
+
+
+COnfigutaion management tools -  Ansible, chef, puppet, salt  etc
+
+
+++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+
+
+
+Ansible  -- It is a open source configuration management tool, created using Python.
+Main machine in which anisble is installed, is called as controller.
+Remote severs that Ansible configures, are called as managed nodes.
+
+Ansible uses agent less policy for configures remote servers ie Ansible is installed only on 1 machine, and we do not require any client side software to be installed on the remote serers.
+
+Ansible performs configuration management through password less ssh.
+
+
+
+
+++++++++++++++++++++++++++++++++++
+Create 4 Servers ( Ubuntu 18 )
+1 is controller
+3  are managed nodes
+
+Name the instances as
+Controller
+Server1
+Server2
+Server3
+
+Ubuntu machines default come with Python3
+
++++++++++++++++++++++++++
+Establish password less ssh connection
+
+$ sudo passwd ubuntu
+( lets give the password as ubuntu only )
+
+$ sudo vim /etc/ssh/sshd_config
+
+change 
+PasswordAuthentication yes
+Save and QUIT
+
+$ sudo service ssh restart
+$ exit
+
+++++++++++++++++++
+
+Repeat the same steps in server2 and server3
+
+++++++++++++++++
+Now,  Connect to controller
+Now , We need to generate ssh connections
+
+$ ssh-keygen -t rsa
+
+cd .ssh
+cp id_rsa.pub authorized_keys
+chmod 600 authorized_keys
+ssh-copy-id 10.10.1.5
+ssh-copy-id 10.10.1.6
+
+
+Now copy the key to managed nodes
+
+$ ssh-copy-id ubuntu@172.31.39.143   ( private Ip of server1 )
+
+$ ssh-copy-id ubuntu@172.31.36.96  ( private Ip of server2 )
+
+$ ssh-copy-id ubuntu@172.31.39.157  ( private Ip of server3 )
+---------------------
+mannually copt rsa key
+------------------C1--------------
+
+ssh-keygen -t rsa
+cd .ssh
+cp id_rsa.pub authorized_keys
+chmod 600 authorized_keys
+
+
+
+india@C1:~/.ssh$ ls
+authorized_keys  id_rsa  id_rsa.pub  known_hosts
+india@C1:~/.ssh$
+india@C1:~/.ssh$
+india@C1:~/.ssh$ cat id_rsa.pub
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDEhQ893PiaqGasYuqlpQj+MQaoiXyndr51gArPWxYRhHdfSbxfhgkAODCg4u0/9KhH15f/NRRVvAHsYEQ/gu1ti7HX3rf7B65r9erm/UHzYhR1mmrGQrOF/ofX+odKKm8+AEFLVc8q+NCi7FcRUdwtC8dWBha5Qq0UbAtKdYV37LeK9NTnhDnm/ouEMFqUoLewwBnq7KCJdUvQdiZ0H1GqDN+vldnUoilUznQ5PSYzEZPkTSYP4aVbIjekvXXcPjaN3bdTK0qpAX5kXh95kAZqtX9j11NSU7h4eMUeYJu6kl5shtbZ0VxbRMZzQlOvvrwKTdFw+Y2VuB9N0IH/YQUj india@C1
+-----------node1-------------------
+/etc/ssh
+india@node1:/etc/ssh$ cat ssh_host_rsa_key.pub
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCcQKjcTN5ZUDnuTo6/6dhGKyldzlieq3n4wH/7jQApKCoCgpqowNE2VO1vROoyLcC4f/kXXIpYW1nM3DTfdpk8yds0+Jl+YzGDr4QFJIAPdkE+DQXPmG+26AFqcSYtWmWogwobni4riSdwfJvISkv1IuMSFCMI0otikcPI4g4HGPGwZNrcylK8rh4lTN9jcXHUw8/PrFNuz5U8PtzCP6oZ6tDybZvaGImKUCyT4SoGcgwFrYcf8wEMd3Q3qfNaO3n0ekiWiWjCcqpHOA6ozw4p6WgsHH89E9/+khjOQeELY5nkyWfBUak1LadcY2/ZCFkUHWvpPcrr4o51NvJhzXT9 root@node1
+
++++++++++++++++++++++
+Installing ansible now
+
+Connect to controller.
+
+$ sudo apt-get install software-properties-common
+(  software-properties-common    ,  is a base package which is required to install ansible )
+
+$ sudo apt-add-repository ppa:ansible/ansible
+
+$ sudo apt-get update
+
+$ sudo apt-get install -y ansible
+
++++++++++++++++++
+To check ther version of ansible
+
+$ ansible --version
+
+++++++++++++
+Write the ip address of nodes in the inventory file
+
+$ cd /etc/ansible
+$ ls
+
+$ sudo vim hosts
+
+insert the private ip addresss of 3 servers
+save and quit
+
+$ ls -la     ( to see the list in the current machine )
+$ ansible all  -a  'ls  -la'    ( you will get the list of the files in all managed nodes )
+
+$ ansible all -a 'free'
+
+
+
+ AAAAB3NzaC1yc2EAAAADAQABAAABAQCcQKjcTN5ZUDnuTo6/6dhGKyldzlieq3n4wH/7jQApKCoCgpqowNE2VO1vROoyLcC4f/kXXIpYW1nM3DTfdpk8yds0+Jl+YzGDr4QFJIAPdkE+DQXPmG+26AFqcSYtWmWogwobni4riSdwfJvISkv1IuMSFCMI0otikcPI4g4HGPGwZNrcylK8rh4lTN9jcXHUw8/PrFNuz5U8PtzCP6oZ6tDybZvaGImKUCyT4SoGcgwFrYcf8wEMd3Q3qfNaO3n0ekiWiWjCcqpHOA6ozw4p6WgsHH89E9/+khjOQeELY5nkyWfBUak1LadcY2/ZCFkUHWvpPcrr4o51NvJhzXT9 root@node1
+
+
+
